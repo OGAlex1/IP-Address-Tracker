@@ -75,6 +75,8 @@ h2{
     align-items: center;
     width: 90%;
     max-width: 500px;
+
+    position: relative;
    
         margin: 1.5rem auto;
 
@@ -104,6 +106,9 @@ input{
 }
 
  button{
+  position: absolute;
+  top: 0;
+  right: 0;
    
   height: 3.2rem;
   width: 3rem;
