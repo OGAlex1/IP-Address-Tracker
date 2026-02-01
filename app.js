@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  //Map installation
+  // Map installation
   const map = L.map("map").setView([9.082, 8.6753], 6);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -17,39 +17,31 @@ document.addEventListener("DOMContentLoaded", () => {
     icon: locationIcon,
   }).addTo(map);
 
-  
   const ipEl = document.getElementById("ip");
   const locationEl = document.getElementById("location");
   const timezoneEl = document.getElementById("timezone");
   const ispEl = document.getElementById("isp");
   const inputEl = document.getElementById("ipInput");
   const searchBtn = document.getElementById("search");
- 
 
-     //API CONFIG
-  
- const BASE_URL = "/api/ip";
+  // API CONFIG
+  const BASE_URL = "/api/ip";
 
-
-  // Detect IP address
   function isIPAddress(value) {
     return /^(\d{1,3}\.){3}\d{1,3}$/.test(value);
   }
 
-  // Build API URL
   function buildURL(query) {
-  if (!query) return BASE_URL;
+    if (!query) return BASE_URL;
 
-  if (isIPAddress(query)) {
-    return `${BASE_URL}?ip=${query}`;
+    if (isIPAddress(query)) {
+      return `${BASE_URL}?ip=${query}`;
+    }
+
+    return `${BASE_URL}?domain=${query}`;
   }
 
-  return `${BASE_URL}?domain=${query}`;
-}
-
-
-     //FETCH + UPDATE UI
- 
+  // FETCH + UPDATE UI
   async function fetchIPData(query = "") {
     try {
       const url = buildURL(query);
@@ -61,18 +53,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = await response.json();
 
-      // Update text info
+      //Guard: ensure real user data exists
+      if (!data || !data.location || !data.ip) return;
+
       ipEl.textContent = data.ip;
       locationEl.textContent = `${data.location.city}, ${data.location.region}, ${data.location.country}`;
       timezoneEl.textContent = `UTC ${data.location.timezone}`;
       ispEl.textContent = data.isp;
 
-      // Update map
       const { lat, lng } = data.location;
       map.setView([lat, lng], 13);
       marker.setLatLng([lat, lng]);
 
-      
       setTimeout(() => {
         map.invalidateSize();
       }, 200);
@@ -83,11 +75,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-
-  //LOAD (USER IP)
+  // LOAD (USER IP)
 
   fetchIPData();
-
 
   searchBtn.addEventListener("click", () => {
     const value = inputEl.value.trim();
@@ -101,3 +91,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
